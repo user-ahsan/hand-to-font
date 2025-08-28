@@ -9,7 +9,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [isBlocking, setIsBlocking] = useState(true);
+  const isBlocking = true;
 
   const handleComingSoon = (event: ReactMouseEvent) => {
     if (isBlocking) {
