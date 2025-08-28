@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 
 
 export default function Header() {
   const [isInHero, setIsInHero] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(true);
+
+  const handleComingSoon = (event: MouseEvent) => {
+    if (isBlocking) {
+      event.preventDefault();
+      alert("Coming soon");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +56,7 @@ export default function Header() {
           <nav className="flex items-center space-x-8">
             <Link 
               href="/docs" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               Docs
@@ -60,12 +69,14 @@ export default function Header() {
             </Link>
             <Link 
               href="/contact" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               Contact
             </Link>
             <Link 
               href="/about" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               About Us
@@ -76,6 +87,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link 
               href="/signin" 
+              onClick={handleComingSoon}
               className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white hover:text-blue-200 transition-all duration-300 font-medium"
             >
               Sign In
