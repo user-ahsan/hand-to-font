@@ -57,10 +57,10 @@ export default function Home() {
       </section>
 
       {/* Second Section: Features */}
-      <section className="relative z-10 min-h-screen flex items-center justify-center px-4">
+      <section className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
         <div className="text-center max-w-7xl mx-auto">
           {/* Section Title with Text Animate */}
-          <div className="mb-20">
+          <div className="mb-12 md:mb-16">
             <TextAnimate 
               animation="blurInUp" 
               by="word" 
@@ -138,10 +138,10 @@ export default function Home() {
 
 
       {/* Fifteenth Section: How It Works - Glassmorphism Cards */}
-      <section className="relative z-10 min-h-screen flex items-center justify-center px-4">
+      <section className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
         <div className="text-center max-w-7xl mx-auto">
           {/* Section Title */}
-          <div className="mb-20">
+          <div className="mb-12 md:mb-16">
             <TextAnimate 
               animation="blurInUp" 
               by="word" 
@@ -259,7 +259,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 py-20 px-4 min-h-screen">
+      <section id="pricing" className="relative z-10 py-16 md:py-24 px-4 scroll-mt-24 md:scroll-mt-40">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -409,7 +409,7 @@ export default function Home() {
       </section>
 
               {/* Testimonials Section */}
-        <section className="relative z-10 py-20 min-h-screen">
+        <section className="relative z-10 py-16 md:py-24">
           {/* Section Header */}
           <div className="text-center mb-16 px-4">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Loved by Designers Worldwide</h2>
@@ -417,7 +417,7 @@ export default function Home() {
           </div>
 
           {/* Testimonial Cards with Marquee */}
-          <div className="mb-20">
+          <div className="mb-12 md:mb-16">
             <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
               {/* Testimonial Card 1 */}
               <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
@@ -582,25 +582,27 @@ export default function Home() {
                  </div>
               </div>
 
-              {/* Quick Links */}
-              <div>
-                <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
-                <ul className="space-y-2">
-                  <li><a href="#hero" className="text-gray-400 hover:text-white transition-colors duration-200">Home</a></li>
-                  <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors duration-200">Pricing</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Documentation</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Support</a></li>
-                </ul>
-              </div>
+              <div className="grid grid-cols-2 gap-8 md:contents">
+                {/* Quick Links */}
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+                  <ul className="space-y-2">
+                    <li><a href="#hero" className="text-gray-400 hover:text-white transition-colors duration-200">Home</a></li>
+                    <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors duration-200">Pricing</a></li>
+                    <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Documentation</a></li>
+                    <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Support</a></li>
+                  </ul>
+                </div>
 
-              {/* Legal */}
-              <div>
-                <h4 className="text-lg font-semibold text-white mb-4">Legal</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Terms of Service</a></li>
-                  <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Cookie Policy</a></li>
-                </ul>
+                {/* Legal */}
+                <div>
+                  <h4 className="text-lg font-semibold text-white mb-4">Legal</h4>
+                  <ul className="space-y-2">
+                    <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a></li>
+                    <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Terms of Service</a></li>
+                    <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Cookie Policy</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
 
