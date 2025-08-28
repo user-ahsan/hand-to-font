@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, MouseEvent as ReactMouseEvent } from "react";
 
 
 export default function Header() {
@@ -9,6 +9,14 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [isBlocking, setIsBlocking] = useState(true);
+
+  const handleComingSoon = (event: ReactMouseEvent) => {
+    if (isBlocking) {
+      event.preventDefault();
+      alert("Coming soon");
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,6 +74,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               href="/docs" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               Docs
@@ -78,12 +87,14 @@ export default function Header() {
             </Link>
             <Link 
               href="/contact" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               Contact
             </Link>
             <Link 
               href="/about" 
+              onClick={handleComingSoon}
               className="text-white hover:text-blue-200 transition-colors duration-200 font-medium"
             >
               About Us
@@ -94,6 +105,7 @@ export default function Header() {
           <div className="hidden md:flex items-center">
             <Link 
               href="/signin" 
+              onClick={handleComingSoon}
               className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white hover:text-blue-200 transition-all duration-300 font-medium"
             >
               Sign In
@@ -126,20 +138,20 @@ export default function Header() {
           {isMenuOpen && (
             <div id="mobile-menu" className="absolute top-full left-0 right-0 mt-2 md:hidden px-4">
               <div ref={menuRef} className="rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-4 space-y-2">
-                <Link href="/docs" className="block text-white font-medium hover:text-blue-200" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/docs" className="block text-white font-medium hover:text-blue-200" onClick={(e) => { handleComingSoon(e); setIsMenuOpen(false); }}>
                   Docs
                 </Link>
                 <Link href="#pricing" className="block text-white font-medium hover:text-blue-200" onClick={() => setIsMenuOpen(false)}>
                   Pricing
                 </Link>
-                <Link href="/contact" className="block text-white font-medium hover:text-blue-200" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/contact" className="block text-white font-medium hover:text-blue-200" onClick={(e) => { handleComingSoon(e); setIsMenuOpen(false); }}>
                   Contact
                 </Link>
-                <Link href="/about" className="block text-white font-medium hover:text-blue-200" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/about" className="block text-white font-medium hover:text-blue-200" onClick={(e) => { handleComingSoon(e); setIsMenuOpen(false); }}>
                   About Us
                 </Link>
                 <div className="pt-2">
-                  <Link href="/signin" className="block w-full text-center px-4 py-2 rounded-full bg-white text-black hover:bg-gray-200 border border-transparent transition-all duration-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/signin" className="block w-full text-center px-4 py-2 rounded-full bg-white text-black hover:bg-gray-200 border border-transparent transition-all duration-300 font-medium" onClick={(e) => { handleComingSoon(e); setIsMenuOpen(false); }}>
                     Sign In
                   </Link>
                 </div>

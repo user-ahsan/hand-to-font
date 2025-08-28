@@ -582,6 +582,7 @@ export default function Home() {
                  </div>
               </div>
 
+<<<<<<< HEAD
               <div className="grid grid-cols-2 gap-8 md:contents">
                 {/* Quick Links */}
                 <div>
@@ -603,6 +604,62 @@ export default function Home() {
                     <li><a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Cookie Policy</a></li>
                   </ul>
                 </div>
+=======
+              {/* Quick Links */}
+              <div>
+                <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+                <ul className="space-y-2">
+                  <li><a href="#hero" className="text-gray-400 hover:text-white transition-colors duration-200">Home</a></li>
+                  <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors duration-200">Pricing</a></li>
+                  <li>
+                    <button
+                      onClick={() => alert("Coming soon")}
+                      className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                    >
+                      Documentation
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => alert("Coming soon")}
+                      className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                    >
+                      Support
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Legal */}
+              <div>
+                <h4 className="text-lg font-semibold text-white mb-4">Legal</h4>
+                <ul className="space-y-2">
+                  <li>
+                    <button
+                      onClick={() => alert("Coming soon")}
+                      className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                    >
+                      Privacy Policy
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => alert("Coming soon")}
+                      className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                    >
+                      Terms of Service
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => alert("Coming soon")}
+                      className="text-gray-400 hover:text-white transition-colors duration-200 text-left"
+                    >
+                      Cookie Policy
+                    </button>
+                  </li>
+                </ul>
+>>>>>>> 4c394db8214c572d911e4483c335531b8b601c52
               </div>
             </div>
 
