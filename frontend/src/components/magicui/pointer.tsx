@@ -22,7 +22,7 @@ export function Pointer({
   style,
   children,
   ...props
-}: Omit<HTMLMotionProps<"div">, "ref">): JSX.Element {
+}: Omit<HTMLMotionProps<"div">, "ref">): React.ReactElement {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const [isActive, setIsActive] = useState<boolean>(false);
