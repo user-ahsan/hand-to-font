@@ -11,15 +11,88 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Marquee } from "../components/magicui/marquee";
 import Header from "../components/Header";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement | null>(null);
+  const featuresRef = useRef<HTMLElement | null>(null);
+  const howRef = useRef<HTMLElement | null>(null);
+  const pricingRef = useRef<HTMLElement | null>(null);
+  const testimonialsRef = useRef<HTMLElement | null>(null);
+  const footerRef = useRef<HTMLElement | null>(null);
+
+  const { scrollY } = useScroll();
+  const veilScale = useTransform(scrollY, [0, 600], [1, 1.12]);
+
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ["start end", "end start"] });
+  const yHero = useTransform(heroProgress, [0, 1], [0, -120]);
+
+  const { scrollYProgress: featuresProgress } = useScroll({ target: featuresRef, offset: ["start end", "end start"] });
+  const yFeatures = useTransform(featuresProgress, [0, 1], [80, -80]);
+
+  const { scrollYProgress: howProgress } = useScroll({ target: howRef, offset: ["start end", "end start"] });
+  const yHow1 = useTransform(howProgress, [0, 1], [-60, 40]);
+  const yHow2 = useTransform(howProgress, [0, 1], [-90, 60]);
+  const yHow3 = useTransform(howProgress, [0, 1], [-60, 40]);
+
+  const { scrollYProgress: pricingProgress } = useScroll({ target: pricingRef, offset: ["start end", "end start"] });
+  const yPricing = useTransform(pricingProgress, [0, 1], [60, -60]);
+
+  const { scrollYProgress: testimonialsProgress } = useScroll({ target: testimonialsRef, offset: ["start end", "end start"] });
+  const yTestimonials = useTransform(testimonialsProgress, [0, 1], [80, -80]);
+
+  const { scrollYProgress: footerProgress } = useScroll({ target: footerRef, offset: ["start end", "end start"] });
+  const yFooter = useTransform(footerProgress, [0, 1], [40, -20]);
+
+  // Auto-hover for touch devices: trigger hover-like visuals when cards are in view; dismiss on tap
+  // Minimal, scoped to elements marked with [data-autohover]
+  // Desktop unaffected
+  if (typeof window !== "undefined") {
+    // Gate: only on touch/coarse pointer
+    const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    if (isTouchLike) {
+      // Setup once per render cycle
+      // Using a microtask to avoid multiple observers during SSR hydration
+      queueMicrotask(() => {
+        const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-autohover]'));
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const el = entry.target as HTMLElement;
+            const overlay = el.querySelector<HTMLElement>(":scope > .absolute.inset-0.rounded-3xl");
+            if (entry.isIntersecting) {
+              el.classList.add("scale-105");
+              el.classList.add("bg-white/10");
+              el.classList.add("border-white/40");
+              if (overlay) overlay.classList.add("opacity-100");
+            } else {
+              el.classList.remove("scale-105", "bg-white/10", "border-white/40");
+              if (overlay) overlay.classList.remove("opacity-100");
+            }
+          });
+        }, { threshold: 0.5 });
+
+        cards.forEach((el) => {
+          observer.observe(el);
+          // Dismiss on tap/click
+          const handleTap = () => {
+            const overlay = el.querySelector<HTMLElement>(":scope > .absolute.inset-0.rounded-3xl");
+            el.classList.remove("scale-105", "bg-white/10", "border-white/40");
+            if (overlay) overlay.classList.remove("opacity-100");
+          };
+          el.addEventListener("click", handleTap, { passive: true });
+        });
+      });
+    }
+  }
+
   return (
     <div className="relative w-full min-h-screen bg-black overflow-x-hidden">
       {/* Header */}
       <Header />
       
       {/* Fixed background with DarkVeil */}
-      <div className="fixed inset-0 w-full h-full">
+      <motion.div className="fixed inset-0 w-full h-full" style={{ scale: veilScale }}>
         <DarkVeil 
           speed={0.5}
           hueShift={0}
@@ -29,11 +102,11 @@ export default function Home() {
           warpAmount={0}
           resolutionScale={1}
         />
-      </div>
+      </motion.div>
       
       {/* First Section: Hero */}
-      <section id="hero" className="relative z-10 min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-4xl mx-auto px-4">
+      <section id="hero" ref={heroRef} className="relative z-10 min-h-screen flex items-center justify-center">
+        <motion.div className="text-center max-w-4xl mx-auto px-4" style={{ y: yHero }}>
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             Turn Your Handwriting into Fonts in Seconds
@@ -53,11 +126,11 @@ export default function Home() {
               See Demo
             </button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Second Section: Features */}
-      <section className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
+      <section ref={featuresRef} className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
         <div className="text-center max-w-7xl mx-auto">
           {/* Section Title with Text Animate */}
           <div className="mb-12 md:mb-16">
@@ -80,9 +153,9 @@ export default function Home() {
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" style={{ y: yFeatures }}>
             {/* Glassmorphism Card 1 */}
-            <div className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
+            <div data-autohover className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 text-white">
@@ -94,7 +167,7 @@ export default function Home() {
             </div>
 
             {/* Glassmorphism Card 2 */}
-            <div className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
+            <div data-autohover className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 text-white">
@@ -106,7 +179,7 @@ export default function Home() {
             </div>
 
             {/* Glassmorphism Card 3 */}
-            <div className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
+            <div data-autohover className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-orange-500/10 via-transparent to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 text-white">
@@ -118,7 +191,7 @@ export default function Home() {
             </div>
 
             {/* Glassmorphism Card 4 */}
-            <div className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
+            <div data-autohover className="group relative p-8 text-center rounded-3xl bg-white/5 backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:shadow-white/20 hover:scale-105">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 text-white">
@@ -128,7 +201,7 @@ export default function Home() {
               <p className="text-gray-300 text-base leading-relaxed">Access your fonts from anywhere and use them on all your devices</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -138,7 +211,7 @@ export default function Home() {
 
 
       {/* Fifteenth Section: How It Works - Glassmorphism Cards */}
-      <section className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
+      <section ref={howRef} className="relative z-10 py-16 md:py-24 flex items-center justify-center px-4">
         <div className="text-center max-w-7xl mx-auto">
           {/* Section Title */}
           <div className="mb-12 md:mb-16">
@@ -164,7 +237,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="h-80 w-full">
               {/* Step 1: Upload */}
-              <div className="group cursor-pointer h-full">
+              <motion.div data-autohover className="group cursor-pointer h-full" style={{ y: yHow1 }}>
                 <div className="relative p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:shadow-3xl hover:scale-105 h-full flex flex-col">
                   {/* Background Glow Effect */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -189,12 +262,12 @@ export default function Home() {
                   {/* Subtle Border Glow */}
                   <div className="absolute inset-0 rounded-3xl border border-transparent group-hover:border-blue-400/20 transition-all duration-500"></div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             <div className="h-80 w-full">
               {/* Step 2: AI Processing */}
-              <div className="group cursor-pointer h-full">
+              <motion.div data-autohover className="group cursor-pointer h-full" style={{ y: yHow2 }}>
                 <div className="relative p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:shadow-3xl hover:scale-105 h-full flex flex-col">
                   {/* Background Glow Effect */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -219,12 +292,12 @@ export default function Home() {
                   {/* Subtle Border Glow */}
                   <div className="absolute inset-0 rounded-3xl border border-transparent group-hover:border-green-400/20 transition-all duration-500"></div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             <div className="h-80 w-full">
               {/* Step 3: Download */}
-              <div className="group cursor-pointer h-full">
+              <motion.div data-autohover className="group cursor-pointer h-full" style={{ y: yHow3 }}>
                 <div className="relative p-8 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:shadow-3xl hover:scale-105 h-full flex flex-col">
                   {/* Background Glow Effect */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -249,7 +322,7 @@ export default function Home() {
                   {/* Subtle Border Glow */}
                   <div className="absolute inset-0 rounded-3xl border border-transparent group-hover:border-purple-400/20 transition-all duration-500"></div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
           </div>
@@ -259,7 +332,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 py-16 md:py-24 px-4 scroll-mt-24 md:scroll-mt-40">
+      <section id="pricing" ref={pricingRef} className="relative z-10 py-16 md:py-24 px-4 scroll-mt-24 md:scroll-mt-40">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -272,9 +345,9 @@ export default function Home() {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ y: yPricing }}>
             {/* Free Trial */}
-            <div className="group cursor-pointer perspective-1000 flex flex-col">
+            <div data-autohover className="group cursor-pointer perspective-1000 flex flex-col">
               <div className="relative p-8 rounded-3xl bg-white/5 border border-white/20 shadow-2xl transition-all duration-700 hover:bg-white/10 hover:border-blue-400/40 hover:shadow-blue-500/20 h-full transform-gpu group-hover:rotate-y-12 group-hover:scale-105 flex flex-col">
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
@@ -318,7 +391,7 @@ export default function Home() {
             </div>
 
             {/* Pro */}
-            <div className="group cursor-pointer perspective-1000 flex flex-col">
+            <div data-autohover className="group cursor-pointer perspective-1000 flex flex-col">
               <div className="relative p-8 rounded-3xl bg-white/5 border border-white/20 shadow-2xl transition-all duration-700 hover:bg-white/10 hover:border-blue-400/40 hover:shadow-blue-500/20 h-full transform-gpu group-hover:rotate-y-12 group-hover:scale-105 flex flex-col">
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
@@ -362,7 +435,7 @@ export default function Home() {
             </div>
 
             {/* Enterprise */}
-            <div className="group cursor-pointer perspective-1000 flex flex-col">
+            <div data-autohover className="group cursor-pointer perspective-1000 flex flex-col">
               <div className="relative p-8 rounded-3xl bg-white/5 border border-white/20 shadow-2xl transition-all duration-700 hover:bg-white/10 hover:border-blue-400/40 hover:shadow-blue-500/20 h-full transform-gpu group-hover:rotate-y-12 group-hover:scale-105 flex flex-col">
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
@@ -404,12 +477,12 @@ export default function Home() {
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
               {/* Testimonials Section */}
-        <section className="relative z-10 py-16 md:py-24">
+        <section ref={testimonialsRef} className="relative z-10 py-16 md:py-24">
           {/* Section Header */}
           <div className="text-center mb-16 px-4">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Loved by Designers Worldwide</h2>
@@ -417,7 +490,7 @@ export default function Home() {
           </div>
 
           {/* Testimonial Cards with Marquee */}
-          <div className="mb-12 md:mb-16">
+          <motion.div className="mb-12 md:mb-16" style={{ y: yTestimonials }}>
             <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
               {/* Testimonial Card 1 */}
               <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
@@ -557,14 +630,14 @@ export default function Home() {
                 </div>
               </div>
             </Marquee>
-          </div>
+          </motion.div>
 
 
         </section>
 
         {/* Footer Section */}
-        <footer className="relative z-10 py-16 px-4 border-t border-white/10">
-          <div className="max-w-7xl mx-auto">
+        <footer ref={footerRef} className="relative z-10 py-16 px-4 border-t border-white/10">
+          <motion.div className="max-w-7xl mx-auto" style={{ y: yFooter }}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {/* Company Info */}
               <div className="col-span-1 md:col-span-2">
@@ -646,7 +719,7 @@ export default function Home() {
                 © 2024 Hand to Font. All rights reserved.
               </p>
             </div>
-          </div>
+          </motion.div>
         </footer>
 
     </div>
