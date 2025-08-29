@@ -45,40 +45,23 @@ export default function Home() {
   const { scrollYProgress: footerProgress } = useScroll({ target: footerRef, offset: ["start end", "end start"] });
   const yFooter = useTransform(footerProgress, [0, 1], [40, -20]);
 
-  // Auto-hover for touch devices: trigger hover-like visuals when cards are in view; dismiss on tap
-  // Minimal, scoped to elements marked with [data-autohover]
-  // Desktop unaffected
+  // Touch-only: toggle hover-like effect on tap (no auto in-view)
   if (typeof window !== "undefined") {
-    // Gate: only on touch/coarse pointer
     const isTouchLike = window.matchMedia("(hover: none), (pointer: coarse)").matches;
     if (isTouchLike) {
-      // Setup once per render cycle
-      // Using a microtask to avoid multiple observers during SSR hydration
       queueMicrotask(() => {
         const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-autohover]'));
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            const el = entry.target as HTMLElement;
-            const overlay = el.querySelector<HTMLElement>(":scope > .absolute.inset-0.rounded-3xl");
-            if (entry.isIntersecting) {
-              el.classList.add("scale-105");
-              el.classList.add("bg-white/10");
-              el.classList.add("border-white/40");
-              if (overlay) overlay.classList.add("opacity-100");
-            } else {
-              el.classList.remove("scale-105", "bg-white/10", "border-white/40");
-              if (overlay) overlay.classList.remove("opacity-100");
-            }
-          });
-        }, { threshold: 0.5 });
-
         cards.forEach((el) => {
-          observer.observe(el);
-          // Dismiss on tap/click
           const handleTap = () => {
             const overlay = el.querySelector<HTMLElement>(":scope > .absolute.inset-0.rounded-3xl");
-            el.classList.remove("scale-105", "bg-white/10", "border-white/40");
-            if (overlay) overlay.classList.remove("opacity-100");
+            const active = el.classList.contains("scale-105");
+            if (active) {
+              el.classList.remove("scale-105", "bg-white/10", "border-white/40");
+              if (overlay) overlay.classList.remove("opacity-100");
+            } else {
+              el.classList.add("scale-105", "bg-white/10", "border-white/40");
+              if (overlay) overlay.classList.add("opacity-100");
+            }
           };
           el.addEventListener("click", handleTap, { passive: true });
         });
@@ -106,7 +89,7 @@ export default function Home() {
       
       {/* First Section: Hero */}
       <section id="hero" ref={heroRef} className="relative z-10 min-h-screen flex items-center justify-center">
-        <motion.div className="text-center max-w-4xl mx-auto px-4" style={{ y: yHero }}>
+        <motion.div className="text-center max-w-4xl mx-auto px-4 pt-28 md:pt-36" style={{ y: yHero }}>
           {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             Turn Your Handwriting into Fonts in Seconds
@@ -127,6 +110,160 @@ export default function Home() {
             </button>
           </div>
         </motion.div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section ref={testimonialsRef} className="relative z-10 pt-8 md:pt-12 pb-16 md:pb-24">
+        {/* Section Header */}
+        <div className="text-center mb-12 md:mb-16 px-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Loved by Designers Worldwide</h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">Join thousands of designers who have transformed their workflow with Hand to Font</p>
+        </div>
+
+        {/* Testimonial Cards with Marquee */}
+        <motion.div className="mb-12 md:mb-16" style={{ y: yTestimonials }}>
+          <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
+            {/* Testimonial Card 1 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  S
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Sarah Chen</h4>
+                  <p className="text-gray-400 text-sm">UI/UX Designer</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;Hand to Font has completely revolutionized my workflow. I can now create custom fonts from my sketches in minutes instead of hours. The accuracy is incredible!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Card 2 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  M
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Marcus Rodriguez</h4>
+                  <p className="text-gray-400 text-sm">Brand Designer</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;As a brand designer, I need unique typography that stands out. Hand to Font lets me create custom fonts that perfectly match my brand vision. Game changer!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Card 3 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  A
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Alex Thompson</h4>
+                  <p className="text-gray-400 text-sm">Product Designer</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;The AI-powered handwriting recognition is mind-blowing. I can sketch ideas on paper and turn them into professional fonts instantly. This tool is pure magic!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Card 4 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  L
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Lisa Park</h4>
+                  <p className="text-gray-400 text-sm">Typography Specialist</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;I&apos;ve been in typography for 15 years, and this is the most innovative tool I&apos;ve seen. The quality of the generated fonts rivals hand-crafted ones. Incredible!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Card 5 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  D
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">David Kim</h4>
+                  <p className="text-gray-400 text-sm">Creative Director</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;Our agency uses Hand to Font for all custom typography needs. It saves us countless hours and delivers exceptional results. Highly recommended!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Card 6 */}
+            <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex itemscenter justify-center text-white font-bold text-lg">
+                  E
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold">Emma Wilson</h4>
+                  <p className="text-gray-400 text-sm">Digital Artist</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                &ldquo;I love how intuitive this tool is. Even as someone who&apos;s not tech-savvy, I can create beautiful custom fonts. The results are always stunning!&rdquo;
+              </p>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+            </div>
+          </Marquee>
+        </motion.div>
+
+
       </section>
 
       {/* Second Section: Features */}
@@ -356,7 +493,7 @@ export default function Home() {
                   <div className="text-4xl font-bold text-white mb-2">$0</div>
                   <p className="text-gray-400">Perfect for trying out the service</p>
                 </div>
-                
+              
                 <ul className="space-y-3 mb-8 flex-grow">
                   <li className="flex items-center text-gray-300">
                     <svg className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -481,159 +618,7 @@ export default function Home() {
         </div>
       </section>
 
-              {/* Testimonials Section */}
-        <section ref={testimonialsRef} className="relative z-10 py-16 md:py-24">
-          {/* Section Header */}
-          <div className="text-center mb-16 px-4">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Loved by Designers Worldwide</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">Join thousands of designers who have transformed their workflow with Hand to Font</p>
-          </div>
-
-          {/* Testimonial Cards with Marquee */}
-          <motion.div className="mb-12 md:mb-16" style={{ y: yTestimonials }}>
-            <Marquee pauseOnHover className="[--duration:30s] [--gap:2rem]">
-              {/* Testimonial Card 1 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    S
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">Sarah Chen</h4>
-                    <p className="text-gray-400 text-sm">UI/UX Designer</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;Hand to Font has completely revolutionized my workflow. I can now create custom fonts from my sketches in minutes instead of hours. The accuracy is incredible!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Card 2 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    M
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">Marcus Rodriguez</h4>
-                    <p className="text-gray-400 text-sm">Brand Designer</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;As a brand designer, I need unique typography that stands out. Hand to Font lets me create custom fonts that perfectly match my brand vision. Game changer!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Card 3 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    A
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">Alex Thompson</h4>
-                    <p className="text-gray-400 text-sm">Product Designer</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;The AI-powered handwriting recognition is mind-blowing. I can sketch ideas on paper and turn them into professional fonts instantly. This tool is pure magic!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Card 4 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    L
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">Lisa Park</h4>
-                    <p className="text-gray-400 text-sm">Typography Specialist</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;I&apos;ve been in typography for 15 years, and this is the most innovative tool I&apos;ve seen. The quality of the generated fonts rivals hand-crafted ones. Incredible!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Card 5 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    D
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">David Kim</h4>
-                    <p className="text-gray-400 text-sm">Creative Director</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;Our agency uses Hand to Font for all custom typography needs. It saves us countless hours and delivers exceptional results. Highly recommended!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-
-              {/* Testimonial Card 6 */}
-              <div className="w-80 h-64 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 flex flex-col justify-between hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    E
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold">Emma Wilson</h4>
-                    <p className="text-gray-400 text-sm">Digital Artist</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                  &ldquo;I love how intuitive this tool is. Even as someone who&apos;s not tech-savvy, I can create beautiful custom fonts. The results are always stunning!&rdquo;
-                </p>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-            </Marquee>
-          </motion.div>
-
-
-        </section>
+            
 
         {/* Footer Section */}
         <footer ref={footerRef} className="relative z-10 py-16 px-4 border-t border-white/10">
